@@ -7,7 +7,10 @@ package pw_imageprocessing;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
 /**
@@ -28,6 +31,9 @@ public class WybórPliku extends javax.swing.JFrame {
     
     public File PobierzPlik(){
         return file;
+    }
+    public BufferedImage PobierzObraz() throws IOException{
+       return ImageIO.read(file);
     }
     public WybórPliku(Wybór Wybór) {
  

@@ -3,6 +3,9 @@ package pw_imageprocessing;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel
@@ -28,4 +31,13 @@ public class ImagePanel extends JPanel
 	{
 		image = imageNew;
 	}
+        
+        public void getImageFromFile(File File) throws IOException{
+        
+            image = ImageIO.read(File);
+        }
+        
+        public void refresh(){
+            this.repaint();
+        }
 }

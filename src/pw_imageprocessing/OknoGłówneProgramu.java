@@ -7,6 +7,9 @@ package pw_imageprocessing;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,6 +18,7 @@ import java.awt.Toolkit;
 public class OknoGłówneProgramu extends javax.swing.JFrame {
  
     private WybórPliku WybórPliku;
+    private final ImagePanel ImagePanel = new ImagePanel();
     /**
      * Creates new form OknoGłównePorgramu
      */
@@ -40,7 +44,7 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
     private void initComponents() {
 
         jSlider1 = new javax.swing.JSlider();
-        Wyświetlacz = new javax.swing.JPanel();
+        Wyświetlacz = ImagePanel;
         ButtonWybórFolderu = new javax.swing.JButton();
         ButtonWybórPliku = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -58,11 +62,11 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         Wyświetlacz.setLayout(WyświetlaczLayout);
         WyświetlaczLayout.setHorizontalGroup(
             WyświetlaczLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 676, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         WyświetlaczLayout.setVerticalGroup(
             WyświetlaczLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 428, Short.MAX_VALUE)
         );
 
         ButtonWybórFolderu.setText("WybórFolderu");
@@ -116,9 +120,6 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Wyświetlacz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 233, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(ButtonPrzetworzenieZbioruObrazu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -139,7 +140,10 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(LabelWyświetlWybranyPlik)
                             .addComponent(LabelWyświetlWybranyFolder))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(526, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(Wyświetlacz, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -165,7 +169,7 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
                     .addComponent(ButtonPrzetworzenieZbioruObrazu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2)
                     .addComponent(LabelWyświetlWybranyFolder))
-                .addGap(34, 34, 34)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Wyświetlacz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -186,6 +190,12 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
       WybórPliku = new  WybórPliku(Wybór.PLIK);
       WybórPliku.setTitle("Wybierz Plik");
       LabelWyświetlWybranyPlik.setText(WybórPliku.PobierzScieżkę());
+        try {
+            ImagePanel.getImageFromFile(WybórPliku.PobierzPlik());
+            ImagePanel.refresh();
+        } catch (IOException ex) {
+            Logger.getLogger(OknoGłówneProgramu.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_ButtonWybórPlikuMouseClicked
 
     private void ButtonWybórFolderuMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonWybórFolderuMousePressed
@@ -194,7 +204,7 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
 
     private void ButtonPrzetwozenieObrazuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonPrzetwozenieObrazuMouseClicked
      MainFrame mainFrame = new MainFrame(WybórPliku.PobierzPlik(),LiczbaWątków.getSelectedIndex()+1);
-
+     
      mainFrame.processImage();   // TODO add your handling code here:
     }//GEN-LAST:event_ButtonPrzetwozenieObrazuMouseClicked
 
