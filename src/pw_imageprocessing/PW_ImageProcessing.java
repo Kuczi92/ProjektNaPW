@@ -17,18 +17,9 @@ public class PW_ImageProcessing {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+ 
         OknoGłówneProgramu  Main =  new OknoGłówneProgramu();
-        
-        
-        
-       // Create main window
-		
-                
-                
-                
-                
-                
+            
     }
     
 }

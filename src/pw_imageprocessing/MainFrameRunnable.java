@@ -1,25 +1,27 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package pw_imageprocessing;
 
-
-//import pw_imageprocessing.ProgressPanel;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-public class MainFrame extends JFrame
-{
-	private static final long serialVersionUID = 1L;
-
-	private ProgressPanel progressPanel;
+/**
+ *
+ * @author Quchi
+ */
+class MainFrameRunnable extends JFrame implements Runnable {
+        private ProgressPanel progressPanel;
 	private ImagePanel imagePanel;
 	private JLabel label;
 	
@@ -33,10 +35,16 @@ public class MainFrame extends JFrame
 	private int threadsNumber = 4;
 	// Image file name
 	private File imageFile = new File("files/testBig.jpg");
-	
-	public MainFrame(File plik,int liczbawątkow)
-	{
-		super("Programowanie wspolbiezne - Image processing");
+        
+    public void setThreadsNumber( int number){
+        this.threadsNumber = number;
+    }   
+    
+    public void setFile(File File){
+        this.imageFile = File;
+    }
+    public MainFrameRunnable(File plik,int liczbawątkow) {
+                super("Programowanie wspolbiezne - Image processing");
                 this.threadsNumber = liczbawątkow;
                 this.imageFile = plik;
 		progressPanel = new ProgressPanel();
@@ -52,11 +60,12 @@ public class MainFrame extends JFrame
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
-	}
-	
-	public MainFrame()
-	{
-		super("Programowanie wspolbiezne - Image processing");
+        
+    }
+    
+     public MainFrameRunnable() 
+     {
+                super("Programowanie wspolbiezne - Image processing");
                
 		progressPanel = new ProgressPanel();
 		imagePanel = new ImagePanel();
@@ -71,9 +80,10 @@ public class MainFrame extends JFrame
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
-	}
-	
-	public void updateProgress(int i)
+     }
+     
+     
+     public void updateProgress(int i)
 	{
 		progressPanel.updateProgressBar(i);
 	}
@@ -87,10 +97,18 @@ public class MainFrame extends JFrame
 	{
 		imagePanel.setImage(imageNew);
 	}
-	
-	public void processImage()
+        
+        private BufferedImage resizeImage(BufferedImage originalImage, int width, int height)
 	{
-		// Try open file
+		BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
+		Graphics2D g = resizedImage.createGraphics();
+		g.drawImage(originalImage, 0, 0, width, height, null);
+		g.dispose();
+		return resizedImage;
+	}
+    @Override
+    public void run() {
+       // Try open file
 		try
 		{
 			// Load image from file
@@ -124,7 +142,7 @@ public class MainFrame extends JFrame
 			}
 
 			// Create array with threads
-			ImageProcessingThread[] thread = new ImageProcessingThread[threadsNumber];
+			ImageProcessingThreadRunnable[] thread = new ImageProcessingThreadRunnable[threadsNumber];
 			// Get image processing start time
 			long start = System.currentTimeMillis();
 
@@ -132,7 +150,7 @@ public class MainFrame extends JFrame
 			for (int i = 0; i < threadsNumber; i++)
 			{
 				// Initialize the image array with threads
-				thread[i] = new ImageProcessingThread(images[i], this, progressLock, 0, 0, chunkWidth, chunkHeight);
+				thread[i] = new ImageProcessingThreadRunnable(images[i], this, progressLock, 0, 0, chunkWidth, chunkHeight);
 				// Run the thread
 				thread[i].start();
 			}
@@ -171,16 +189,6 @@ public class MainFrame extends JFrame
 		{
 			System.err.println("Image loading error");
 		}
-	}
-	
-	private BufferedImage resizeImage(BufferedImage originalImage, int width, int height)
-	{
-		BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
-		Graphics2D g = resizedImage.createGraphics();
-		g.drawImage(originalImage, 0, 0, width, height, null);
-		g.dispose();
-		return resizedImage;
-	}
-        
-        
+    }
+    
 }

@@ -7,18 +7,27 @@ package pw_imageprocessing;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
+import javax.swing.ListModel;
 
 /**
  *
  * @author Quchi
  */
 public class OknoGłówneProgramu extends javax.swing.JFrame {
- 
+    MainFrame mainFrame;
     private WybórPliku WybórPliku;
     private final ImagePanel ImagePanel = new ImagePanel();
+    Thread OknoPojedynczegoObrazu;
+    ArrayList<String> Lista;
     /**
      * Creates new form OknoGłównePorgramu
      */
@@ -31,6 +40,25 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         setLocation(width/4, height/4);
         setVisible(true);
     }
+    
+    public File getFile(String Sciezka){
+        File File=  new File(Sciezka);
+        return File ;
+    }
+    
+    
+    public ArrayList<String> ListaPlikówWFolderze(String Sciezka) throws IOException{
+        ArrayList<String> ListaPlików = new ArrayList<>();
+        try(Stream<Path> paths = Files.walk(Paths.get(Sciezka))) {
+          paths.forEach((Path filePath) -> {
+        if (Files.isRegularFile(filePath)) {
+            ListaPlików.add(filePath.toString());
+           }
+          });
+         }
+        return ListaPlików;
+    }
+    
     public String PobierzSciezke(){
         return WybórPliku.PobierzScieżkę();
     }
@@ -44,6 +72,7 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
     private void initComponents() {
 
         jSlider1 = new javax.swing.JSlider();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
         Wyświetlacz = ImagePanel;
         ButtonWybórFolderu = new javax.swing.JButton();
         ButtonWybórPliku = new javax.swing.JButton();
@@ -55,6 +84,10 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         ButtonPrzetwozenieObrazu = new javax.swing.JButton();
         ButtonPrzetworzenieZbioruObrazu = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        ListaZdjęć = new javax.swing.JList<>();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,7 +99,7 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         );
         WyświetlaczLayout.setVerticalGroup(
             WyświetlaczLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 428, Short.MAX_VALUE)
+            .addGap(0, 387, Short.MAX_VALUE)
         );
 
         ButtonWybórFolderu.setText("WybórFolderu");
@@ -114,6 +147,27 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         });
 
         ButtonPrzetworzenieZbioruObrazu.setText("Przetwórz zbiór obrazów");
+        ButtonPrzetworzenieZbioruObrazu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ButtonPrzetworzenieZbioruObrazuMouseClicked(evt);
+            }
+        });
+
+        ListaZdjęć.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Wybierz folder zawierające zdjęcia" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        ListaZdjęć.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ListaZdjęćMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(ListaZdjęć);
+
+        jLabel3.setText("Lista zdjęć w wybranym folderze (klikając na przykładową ścieżkę -  program przetwarza wybrany obraz) :");
+
+        jLabel4.setText("Skala zdjęcia 1:1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -121,54 +175,68 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(ButtonPrzetworzenieZbioruObrazu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ButtonPrzetwozenieObrazu, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
-                    .addComponent(ButtonWybórPliku, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ButtonWybórFolderu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(ButtonWybórPliku, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ButtonWybórFolderu, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ButtonPrzetwozenieObrazu, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ButtonPrzetworzenieZbioruObrazu, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(LiczbaWątków, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(LiczbaWątków, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(LabelWyświetlWybranyPlik)
-                            .addComponent(LabelWyświetlWybranyFolder))))
-                .addContainerGap(526, Short.MAX_VALUE))
+                            .addComponent(LabelWyświetlWybranyFolder)))
+                    .addComponent(jLabel3))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Wyświetlacz, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Wyświetlacz, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(LiczbaWątków, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ButtonWybórPliku)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ButtonWybórFolderu, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ButtonPrzetwozenieObrazu)
-                    .addComponent(jLabel1)
-                    .addComponent(LabelWyświetlWybranyPlik))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ButtonWybórFolderu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ButtonWybórPliku, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ButtonPrzetwozenieObrazu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(ButtonPrzetworzenieZbioruObrazu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5)
+                    .addComponent(LiczbaWątków, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(LabelWyświetlWybranyFolder))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(LabelWyświetlWybranyPlik))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addGap(2, 2, 2)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Wyświetlacz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -184,6 +252,20 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
       WybórPliku = new  WybórPliku(Wybór.FOLDER);
       WybórPliku.setTitle("Wybierz Folder");
       LabelWyświetlWybranyFolder.setText(WybórPliku.PobierzScieżkę());
+      Lista = null;
+        try {
+        Lista  = ListaPlikówWFolderze(LabelWyświetlWybranyFolder.getText());
+        } catch (IOException ex) {
+            Logger.getLogger(OknoGłówneProgramu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String[] stringsa = Lista.toArray(new String[Lista.size()]) ;
+        
+        ListaZdjęć.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = stringsa;
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+      // ListaZdjęć.setModel(Lista);
     }//GEN-LAST:event_ButtonWybórFolderuMouseClicked
 
     private void ButtonWybórPlikuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonWybórPlikuMouseClicked
@@ -196,17 +278,42 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(OknoGłówneProgramu.class.getName()).log(Level.SEVERE, null, ex);
         }
+      
+      
     }//GEN-LAST:event_ButtonWybórPlikuMouseClicked
 
     private void ButtonWybórFolderuMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonWybórFolderuMousePressed
-
+         
+        
     }//GEN-LAST:event_ButtonWybórFolderuMousePressed
 
     private void ButtonPrzetwozenieObrazuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonPrzetwozenieObrazuMouseClicked
-     MainFrame mainFrame = new MainFrame(WybórPliku.PobierzPlik(),LiczbaWątków.getSelectedIndex()+1);
-     
-     mainFrame.processImage();   // TODO add your handling code here:
+        OknoPojedynczegoObrazu = new Thread(new MainFrameRunnable(new File(LabelWyświetlWybranyPlik.getText()),LiczbaWątków.getSelectedIndex()+1));
+        OknoPojedynczegoObrazu.start();
     }//GEN-LAST:event_ButtonPrzetwozenieObrazuMouseClicked
+
+    private void ButtonPrzetworzenieZbioruObrazuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonPrzetworzenieZbioruObrazuMouseClicked
+        for( int Zdjęcie = 0 ; Zdjęcie< ListaZdjęć.getWidth()-1 ;Zdjęcie++ )
+        {
+        LabelWyświetlWybranyPlik.setText(Lista.get(Zdjęcie));    
+        OknoPojedynczegoObrazu = new Thread(new MainFrameRunnable(new File(LabelWyświetlWybranyPlik.getText()),LiczbaWątków.getSelectedIndex()+1));
+        OknoPojedynczegoObrazu.start();  
+        }
+    }//GEN-LAST:event_ButtonPrzetworzenieZbioruObrazuMouseClicked
+
+    private void ListaZdjęćMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaZdjęćMouseClicked
+       
+       // OknoPojedynczegoObrazu = new Thread(new MainFrameRunnable(new File(ListaZdjęć.getSelectedValue()),LiczbaWątków.getSelectedIndex()+1));
+        //OknoPojedynczegoObrazu.start();
+        LabelWyświetlWybranyPlik.setText(ListaZdjęć.getSelectedValue());
+        try {
+            ImagePanel.getImageFromFile(new File(ListaZdjęć.getSelectedValue()));
+            ImagePanel.refresh();
+        } catch (IOException ex) {
+            Logger.getLogger(OknoGłówneProgramu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_ListaZdjęćMouseClicked
 
     /**
      * @param args the command line arguments
@@ -245,10 +352,15 @@ public class OknoGłówneProgramu extends javax.swing.JFrame {
     private javax.swing.JLabel LabelWyświetlWybranyFolder;
     private javax.swing.JLabel LabelWyświetlWybranyPlik;
     private javax.swing.JComboBox<String> LiczbaWątków;
+    private javax.swing.JList<String> ListaZdjęć;
     private javax.swing.JPanel Wyświetlacz;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     // End of variables declaration//GEN-END:variables
 }

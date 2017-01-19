@@ -84,6 +84,7 @@ public class WybórPliku extends javax.swing.JFrame {
         else if(Wybór==Wybór.PLIK){
             JFileChooser.setDialogTitle("Dokonaj wyboru pliku z obrazem");
         }
+        JFileChooser.setCurrentDirectory(new java.io.File("C:\\Users\\Quchi\\Documents\\PW_ImageProcessing\\files"));
         JFileChooser.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
         JFileChooser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
