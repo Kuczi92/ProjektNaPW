@@ -29,4 +29,9 @@ public class ProgressPanel extends JPanel
 	{
 		progressBar.setMaximum(i);
 	}
+        
+        public void setProgressBarValue(int i)
+	{
+		progressBar.setValue(i);
+	}
 }
